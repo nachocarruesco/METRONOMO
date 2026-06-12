@@ -145,6 +145,13 @@ select:focus, input[type="number"]:focus {
     gap: 12px;
     margin-top: 5px;
 }
+#start {
+    background: green !important;
+}
+
+#stop {
+    background: red !important;
+}
 
 button {
     flex: 1;
