@@ -20,7 +20,7 @@ const presets = {
     },
     "bulerias al 12": {
         name: "Bulerías al 12", tag: "b", subdivisions: 24,
-        marks: { 4: "agudo", 10: "agudo", 14: "grave", 18: "grave", 22: "grave" },
+        marks: { 2: "agudo", 3: "agudo", 6: "grave", 8: "agudo", 9: "agudo", 14: "grave", 16: "grave",  18: "agudo", 20: "grave" },
         labels: [
             { text: "12", step: 0 }, { text: "1", step: 2 }, { text: "2", step: 4 },
             { text: "3", step: 6 },  { text: "4", step: 8 }, { text: "5", step: 10 },
