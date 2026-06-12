@@ -179,6 +179,7 @@ function stop() {
     if (timer) { clearInterval(timer); timer = null; }
     currentStep = 0;
     draw();
+    document.getElementById("stop").blur(); // evita “focus raro”
 }
 
 function populateCierreSelector() {
