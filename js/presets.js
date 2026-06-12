@@ -18,7 +18,7 @@ const presets = {
         marks: { 2: "grave", 4: "agudo", 6: "agudo" },
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
-    "bulerias": {
+    "bulerias al 12": {
         name: "Bulerías al 12", tag: "b", subdivisions: 24,
         marks: { 4: "agudo", 10: "agudo", 14: "grave", 18: "grave", 22: "grave" },
         labels: [
@@ -28,7 +28,7 @@ const presets = {
             { text: "9", step: 18 }, { text: "10", step: 20 }, { text: "11", step: 22 }
         ]
     },
-    "bulerias": {
+    "bulerias de jerez": {
         name: "Bulerías Jerez", tag: "b", subdivisions: 24,
         marks: { 0: "grave", 2: "agudo", 3: "agudo", 4: "agudo", 6: "agudo", 12: "grave", 14: "agudo", 15: "agudo", 16: "agudo" },
         labels: [
