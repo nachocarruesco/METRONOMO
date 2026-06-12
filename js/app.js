@@ -168,7 +168,7 @@ function start() {
     updatePresetByLap();
     currentStep = 0;
     
-    const bpm = parseInt(document.getElementById("bpm").value) || 120;
+    const bpm = parseInt(document.getElementById("bpm").value) || 80;
     let intervalMs = (60000 / bpm) / 2;
 
     tick();
