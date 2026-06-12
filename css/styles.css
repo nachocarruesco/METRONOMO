@@ -176,6 +176,8 @@ button#start:disabled {
 button#stop {
     background: var(--accent-red);
     color: white;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 button#stop:hover {
