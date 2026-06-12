@@ -3,19 +3,24 @@
 
 // RITMOS (r=rumba, b=buleria, t=tangos, a=alegrias)
 const presets = {
-    "rumba_abierta": {
+    "rumba": {
         name: "Rumba Abierta", tag: "r", subdivisions: 8,
         marks: { 0: "grave", 3: "agudo", 6: "agudo" },
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
-    "rumba_cerrada": {
-        name: "Rumba Cerrada", tag: "r", subdivisions: 8,
-        marks: { 0: "grave", 2: "agudo", 4: "grave", 6: "agudo" },
+    "rumba_caballo": {
+        name: "Rumba Caballo", tag: "r", subdivisions: 8,
+        marks: { 0: "grave", 2: "agudo", 3: "agudo", 4: "grave", 6: "agudo", 7: "agudo" },
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
-    "tangos": {
+    "tangos abierto": {
+        name: "Tangos Abiertos", tag: "t", subdivisions: 8,
+        marks: {  1: "agudo", 2: "agudo", 3: "grave", 6: "grave" },
+        labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
+    },
+     "tangos cerrado": {
         name: "Tangos Flamencos", tag: "t", subdivisions: 8,
-        marks: { 2: "grave", 4: "agudo", 6: "agudo" },
+        marks: {  1: "agudo", 2: "agudo", 3: "grave", 4: "grave", 6: "grave" },
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
     "bulerias al 12": {
@@ -40,7 +45,7 @@ const presets = {
     },
     "alegrias": {
         name: "Alegrías (24 Sub.)", tag: "a", subdivisions: 24,
-        marks: { 4: "grave", 10: "grave", 14: "agudo", 18: "agudo", 22: "agudo" },
+        marks: { 2: "agudo", 3: "agudo", 4: "agudo", 6: "grave", 8: "agudo", 9: "agudo", 10: "agudo", 12: "grave", 14: "agudo", 15: "agudo", 16: "grave",  18: "agudo", 19: "agudo", 20: "grave", 22: "agudo", 23: "agudo" },
         labels: [
             { text: "12", step: 0 }, { text: "1", step: 2 }, { text: "2", step: 4 },
             { text: "3", step: 6 },  { text: "4", step: 8 }, { text: "5", step: 10 },
