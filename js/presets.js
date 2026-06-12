@@ -59,17 +59,17 @@ const presets = {
 const cierrePresets = {
     "cierre_rumba": {
         name: "Cierre Rumbas", tag: "r", subdivisions: 8,
-        marks: { 0: "grave", 4: "agudo", 6: "agudo" },
+        marks: { 0: "grave", 1: "agudo", 2: "agudo", 3: "agudo", 4: "agudo"},
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
     "cierre_tangos": {
         name: "Cierre Tangos", tag: "t", subdivisions: 8,
-        marks: { 0: "grave", 2: "grave", 4: "agudo" },
+       marks: { 0: "grave", 1: "agudo", 2: "agudo", 3: "agudo", 4: "agudo"},
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
     "cierre_buleria": {
         name: "Cierre Bulerías", tag: "b", subdivisions: 24,
-        marks: { 2: "agudo", 6: "grave", 10: "agudo", 14: "grave", 18: "agudo", 22: "grave" },
+        marks: { 0: "grave", 2: "agudo", 3: "agudo", 6: "grave", 8: "agudo", 9: "agudo", 14: "grave", 16: "grave",  18: "agudo", 20: "grave" },
         labels: [
             { text: "12", step: 0 }, { text: "1", step: 2 }, { text: "2", step: 4 },
             { text: "3", step: 6 },  { text: "4", step: 8 }, { text: "5", step: 10 },
