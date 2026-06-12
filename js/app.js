@@ -6,8 +6,8 @@ const cx = canvas.width / 2;
 const cy = canvas.height / 2;
 const radius = 210;
 
-let currentPreset = JSON.parse(JSON.stringify(presets["rumba_abierta"]));
-let originalPreset = JSON.parse(JSON.stringify(presets["rumba_abierta"]));
+let currentPreset = JSON.parse(JSON.stringify(presets["rumba"]));
+let originalPreset = JSON.parse(JSON.stringify(presets["rumba"]));
 let currentStep = 0;
 let timer = null;
 let pointCoordinates = [];
