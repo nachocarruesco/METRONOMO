@@ -19,13 +19,23 @@ const presets = {
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
     "bulerias": {
-        name: "Bulerías (24 Sub.)", tag: "b", subdivisions: 24,
+        name: "Bulerías al 12", tag: "b", subdivisions: 24,
         marks: { 4: "agudo", 10: "agudo", 14: "grave", 18: "grave", 22: "grave" },
         labels: [
             { text: "12", step: 0 }, { text: "1", step: 2 }, { text: "2", step: 4 },
             { text: "3", step: 6 },  { text: "4", step: 8 }, { text: "5", step: 10 },
             { text: "6", step: 12 }, { text: "7", step: 14 }, { text: "8", step: 16 },
             { text: "9", step: 18 }, { text: "10", step: 20 }, { text: "11", step: 22 }
+        ]
+    },
+    "bulerias": {
+        name: "Bulerías Jerez", tag: "b", subdivisions: 24,
+        marks: { 0: "grave", 2: "agudo", 3: "agudo", 4: "agudo", 6: "agudo", 12: "grave", 14: "agudo", 15: "agudo", 16: "agudo" },
+        labels: [
+            { text: "6", step: 0 }, { text: "1", step: 2 }, { text: "2", step: 4 },
+            { text: "3", step: 6 },  { text: "4", step: 8 }, { text: "5", step: 10 },
+            { text: "6", step: 12 }, { text: "1", step: 14 }, { text: "2", step: 16 },
+            { text: "3", step: 18 }, { text: "4", step: 20 }, { text: "5", step: 22 }
         ]
     },
     "alegrias": {
