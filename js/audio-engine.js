@@ -1,4 +1,5 @@
-//js/audio-engine.js
+//js/audio-engine.js - Versión con archivos WAV reales (corregida)
+
 const soundFiles = {
     "cajon_grave": "audio/cajon_grave.wav",
     "cajon_agudo": "audio/cajon_agudo.wav",
@@ -13,25 +14,31 @@ const audioBuffers = {};
 let audioInitialized = false;
 
 async function initAudio() {
-    if (audioInitialized) return;
-    
     const statusDiv = document.getElementById("loadingStatus");
+    
+    if (audioInitialized) return true;
     
     try {
         // Crear contexto de audio
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
+        // Suspendemos inicialmente (necesario para iOS)
+        await audioCtx.suspend();
+        
+        statusDiv.textContent = "Cargando muestras de audio...";
+        
         // Cargar todas las muestras de audio
         const loadPromises = Object.keys(soundFiles).map(async (key) => {
             try {
                 const response = await fetch(soundFiles[key]);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${soundFiles[key]}`);
+                }
                 const arrayBuffer = await response.arrayBuffer();
                 audioBuffers[key] = await audioCtx.decodeAudioData(arrayBuffer);
                 return true;
             } catch (error) {
-                console.error("Fallo al cargar audio en: " + soundFiles[key], error);
-                // Crear un sonido sintético como fallback
+                console.error(`Error cargando ${soundFiles[key]}:`, error);
                 audioBuffers[key] = null;
                 return false;
             }
@@ -39,28 +46,35 @@ async function initAudio() {
         
         await Promise.all(loadPromises);
         
-        // Suspendemos el contexto inicialmente (necesario para iOS)
-        await audioCtx.suspend();
+        // Verificar si al menos algunos archivos se cargaron
+        const loadedCount = Object.values(audioBuffers).filter(b => b !== null).length;
         
-        statusDiv.textContent = "¡Muestras de audio listas!";
-        statusDiv.style.color = "#00ff88";
-        document.getElementById("start").disabled = false;
-        audioInitialized = true;
-        
-        return true;
+        if (loadedCount > 0) {
+            statusDiv.textContent = `✅ ${loadedCount}/6 muestras cargadas!`;
+            statusDiv.style.color = "#00ff88";
+            document.getElementById("start").disabled = false;
+            audioInitialized = true;
+            return true;
+        } else {
+            statusDiv.textContent = "⚠️ Error: No se pudieron cargar los audios. Verifica la carpeta 'audio/'";
+            statusDiv.style.color = "#ffaa00";
+            document.getElementById("start").disabled = false; // Permitir inicio aunque no haya audio
+            return false;
+        }
     } catch (error) {
         console.error("Error inicializando audio:", error);
-        statusDiv.textContent = "Error cargando audio. Usando sonidos sintéticos.";
-        statusDiv.style.color = "#ffaa00";
+        statusDiv.textContent = "❌ Error de audio. Recarga la página.";
+        statusDiv.style.color = "#ff4444";
         document.getElementById("start").disabled = false;
-        // Continuar sin muestras de audio (usar síntesis)
-        audioInitialized = true;
         return false;
     }
 }
 
 function playSound(type, mode) {
     if (!audioCtx) return;
+    
+    // Si el contexto está suspendido, no reproducir (se reanudará al hacer clic)
+    if (audioCtx.state !== "running") return;
     
     const bufferKey = `${mode}_${type}`;
     const buffer = audioBuffers[bufferKey];
@@ -73,75 +87,55 @@ function playSound(type, mode) {
             source.start(audioCtx.currentTime);
         } catch (e) {
             console.warn("Error reproduciendo audio:", e);
-            playSyntheticSound(type, mode); // Fallback a síntesis
+            playSyntheticFallback(type, mode);
         }
     } else {
-        playSyntheticSound(type, mode); // Fallback a síntesis
+        // Fallback a sonido sintético si el archivo no existe
+        playSyntheticFallback(type, mode);
     }
 }
 
-// Sonidos sintéticos de respaldo (en caso de que fallen los WAV)
-function playSyntheticSound(type, mode) {
-    if (!audioCtx) return;
+// Sonido sintético de respaldo (en caso de que falte algún archivo)
+function playSyntheticFallback(type, mode) {
+    if (!audioCtx || audioCtx.state !== "running") return;
     
     const now = audioCtx.currentTime;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
     
-    osc.connect(filter);
-    filter.connect(gain);
+    osc.connect(gain);
     gain.connect(audioCtx.destination);
     
-    if (mode === "cajon") {
-        if (type === "grave") {
-            filter.type = "lowpass";
-            filter.frequency.setValueAtTime(400, now);
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(100, now);
-            osc.frequency.exponentialRampToValueAtTime(65, now + 0.2);
-            gain.gain.setValueAtTime(0.85, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-        } else if (type === "agudo") {
-            filter.type = "highpass";
-            filter.frequency.setValueAtTime(800, now);
-            osc.type = "square";
-            osc.frequency.setValueAtTime(450, now);
-            gain.gain.setValueAtTime(0.35, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-        } else if (type === "click") {
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(800, now);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-        }
-    } else if (mode === "palmas") {
-        if (type === "grave") {
-            filter.type = "lowpass";
-            filter.frequency.setValueAtTime(500, now);
-            osc.type = "triangle";
-            osc.frequency.setValueAtTime(200, now);
-            gain.gain.setValueAtTime(0.7, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-        } else if (type === "agudo") {
-            filter.type = "bandpass";
-            filter.frequency.setValueAtTime(1200, now);
-            osc.type = "sawtooth";
-            osc.frequency.setValueAtTime(700, now);
-            gain.gain.setValueAtTime(0.35, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-        } else if (type === "click") {
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(1200, now);
-            gain.gain.setValueAtTime(0.15, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-        }
+    osc.type = "sine";
+    
+    if (type === "grave") {
+        osc.frequency.value = 100;
+        gain.gain.value = 0.5;
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    } else if (type === "agudo") {
+        osc.frequency.value = 600;
+        gain.gain.value = 0.3;
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    } else {
+        osc.frequency.value = 800;
+        gain.gain.value = 0.2;
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
     }
     
     osc.start(now);
-    osc.stop(now + 0.25);
+    osc.stop(now + 0.2);
+}
+
+// Función para reanudar audio (se llama al hacer clic en Start)
+async function resumeAudioContext() {
+    if (audioCtx && audioCtx.state === "suspended") {
+        await audioCtx.resume();
+        console.log("Audio context reanudado");
+        return true;
+    }
+    return false;
 }
 
 // Exponer funciones globalmente
 window.initAudio = initAudio;
-window.audioCtx = () => audioCtx;
+window.resumeAudioContext = resumeAudioContext;
