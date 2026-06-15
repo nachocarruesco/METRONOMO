@@ -198,15 +198,18 @@ function tick() {
     currentStep = (currentStep + 1) % currentPreset.subdivisions;
 }
 
+
 async function start() {
     if (timer) return;
     
-    if (!isAudioInitialized && window.initAudio) {
-        await window.initAudio();
+    // Inicializar audio si no está inicializado
+    if (!isAudioInitialized) {
+        await initAudio();
         isAudioInitialized = true;
     }
     
-    if (audioCtx && audioCtx.state === "suspended") {
+    // Reanudar el contexto de audio (importante para iOS y después de carga)
+    if (audioCtx) {
         await audioCtx.resume();
     }
 
