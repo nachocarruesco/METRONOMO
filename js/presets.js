@@ -5,7 +5,7 @@
 const presets = {
     "rumba": {
         name: "Rumba Abierta", tag: "r", subdivisions: 8,
-        marks: { 0: "grave", 3: "agudo", 6: "agudo" },
+        marks: { 0: "grave", 3: "grave", 6: "agudo" },
         labels: [{ text: "1", step: 0 }, { text: "2", step: 2 }, { text: "3", step: 4 }, { text: "4", step: 6 }]
     },
     "rumba_caballo": {
