@@ -168,7 +168,20 @@ function draw() {
 
 function getIntervalMs() {
     const bpm = parseInt(document.getElementById("bpm").value) || 120;
-    const beatsPerMeasure = 4;
+    
+    // Detectar automáticamente el tipo de compás según las subdivisiones
+    let beatsPerMeasure = 4; // Default: 4/4
+    
+    if (currentPreset.subdivisions === 24) {
+        // Para bulerías, alegrías y otros compases de 12/8
+        beatsPerMeasure = 12; // 12 pulsos por compás en 12/8
+    } else if (currentPreset.subdivisions === 16) {
+        beatsPerMeasure = 4; // 4/4 con semicorcheas
+    } else if (currentPreset.subdivisions === 12) {
+        beatsPerMeasure = 4; // 3/4 o 6/8 dependiendo
+    }
+    // Para subdivisions === 8 (rumba, tangos): beatsPerMeasure = 4 (correcto)
+    
     const intervalSeconds = (60 / bpm) / (currentPreset.subdivisions / beatsPerMeasure);
     return intervalSeconds * 1000;
 }
