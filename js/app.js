@@ -103,12 +103,14 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     pointCoordinates = [];
 
+    // Dibujar el círculo exterior
     ctx.beginPath();
     ctx.arc(cx, cy, radius, 0, Math.PI * 2);
     ctx.strokeStyle = "#333";
     ctx.lineWidth = 4;
     ctx.stroke();
 
+    // Dibujar las etiquetas
     ctx.fillStyle = "#aaa";
     ctx.font = currentPreset.subdivisions > 12 ? "bold 20px Arial" : "bold 26px Arial";
     ctx.textAlign = "center";
@@ -125,6 +127,7 @@ function draw() {
         });
     }
 
+    // Dibujar los marcadores
     for (let i = 0; i < currentPreset.subdivisions; i++) {
         const a = getStepAngle(i, currentPreset.subdivisions);
         const x = cx + Math.cos(a) * radius;
@@ -134,36 +137,59 @@ function draw() {
         const isActive = (i === currentStep);
         const mark = currentPreset.marks[i];
 
-        ctx.strokeStyle = ctx.fillStyle = isActive ? "#ffcc00" : "#666";
-        ctx.lineWidth = currentPreset.subdivisions > 12 ? 3 : 4;
+        // Configurar colores según estado
+        const mainColor = isActive ? "#ffcc00" : "#ffffff";
+        ctx.strokeStyle = mainColor;
+        ctx.fillStyle = mainColor;
+        ctx.lineWidth = currentPreset.subdivisions > 12 ? 4 : 5;
 
         if (mark === "grave") {
+            // Círculo para grave
+            const graveRadius = currentPreset.subdivisions > 12 ? 14 : 18;
             ctx.beginPath();
-            ctx.arc(x, y, currentPreset.subdivisions > 12 ? 10 : 14, 0, Math.PI * 2);
+            ctx.arc(x, y, graveRadius, 0, Math.PI * 2);
             ctx.stroke();
+            // Relleno suave (solo cuando no está activo)
+            if (!isActive) {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+                ctx.fill();
+                ctx.fillStyle = mainColor; // Restaurar color para siguientes elementos
+            }
         } else if (mark === "agudo") {
-            const size = currentPreset.subdivisions > 12 ? 6 : 10;
+            // X para agudo
+            const size = currentPreset.subdivisions > 12 ? 10 : 14;
             ctx.beginPath();
-            ctx.moveTo(x - size, y - size); ctx.lineTo(x + size, y + size);
-            ctx.moveTo(x + size, y - size); ctx.lineTo(x - size, y + size);
+            ctx.moveTo(x - size, y - size);
+            ctx.lineTo(x + size, y + size);
+            ctx.moveTo(x + size, y - size);
+            ctx.lineTo(x - size, y + size);
             ctx.stroke();
         } else {
+            // Punto para sin marca
+            const dotRadius = currentPreset.subdivisions > 12 ? 6 : 9;
             ctx.beginPath();
-            ctx.arc(x, y, currentPreset.subdivisions > 12 ? 5 : 8, 0, Math.PI * 2);
+            ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
             ctx.fill();
         }
     }
 
+    // Dibujar la aguja
     const needleAngle = getStepAngle(currentStep, currentPreset.subdivisions);
     const ax = cx + Math.cos(needleAngle) * (radius - 20);
     const ay = cy + Math.sin(needleAngle) * (radius - 20);
 
     ctx.beginPath();
-    ctx.moveTo(cx, cy); ctx.lineTo(ax, ay);
-    ctx.strokeStyle = "#00ff88"; ctx.lineWidth = 4; ctx.stroke();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(ax, ay);
+    ctx.strokeStyle = "#00ff88";
+    ctx.lineWidth = 4;
+    ctx.stroke();
 
-    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-    ctx.fillStyle = "#00ff88"; ctx.fill();
+    // Dibujar el centro
+    ctx.beginPath();
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = "#00ff88";
+    ctx.fill();
 }
 
 function getIntervalMs() {
