@@ -1,4 +1,4 @@
-//js/audio-engine.js - Versión con archivos WAV reales (corregida)
+//js/audio-engine.js - Versión con archivos WAV reales (con auto-inicio)
 
 const soundFiles = {
     "cajon_grave": "audio/cajon_grave.wav",
@@ -36,9 +36,10 @@ async function initAudio() {
                 }
                 const arrayBuffer = await response.arrayBuffer();
                 audioBuffers[key] = await audioCtx.decodeAudioData(arrayBuffer);
+                console.log(`✅ Cargado: ${soundFiles[key]}`);
                 return true;
             } catch (error) {
-                console.error(`Error cargando ${soundFiles[key]}:`, error);
+                console.error(`❌ Error cargando ${soundFiles[key]}:`, error);
                 audioBuffers[key] = null;
                 return false;
             }
@@ -52,20 +53,25 @@ async function initAudio() {
         if (loadedCount > 0) {
             statusDiv.textContent = `✅ ${loadedCount}/6 muestras cargadas!`;
             statusDiv.style.color = "#00ff88";
-            document.getElementById("start").disabled = false;
+            // Habilitar el botón de inicio
+            const startBtn = document.getElementById("start");
+            if (startBtn) startBtn.disabled = false;
             audioInitialized = true;
             return true;
         } else {
-            statusDiv.textContent = "⚠️ Error: No se pudieron cargar los audios. Verifica la carpeta 'audio/'";
+            statusDiv.textContent = "⚠️ No se pudieron cargar los audios. Verifica la carpeta 'audio/'";
             statusDiv.style.color = "#ffaa00";
-            document.getElementById("start").disabled = false; // Permitir inicio aunque no haya audio
+            // Habilitar el botón igualmente (usará sonidos sintéticos)
+            const startBtn = document.getElementById("start");
+            if (startBtn) startBtn.disabled = false;
             return false;
         }
     } catch (error) {
         console.error("Error inicializando audio:", error);
-        statusDiv.textContent = "❌ Error de audio. Recarga la página.";
-        statusDiv.style.color = "#ff4444";
-        document.getElementById("start").disabled = false;
+        statusDiv.textContent = "❌ Error de audio. Usando sonidos sintéticos.";
+        statusDiv.style.color = "#ffaa00";
+        const startBtn = document.getElementById("start");
+        if (startBtn) startBtn.disabled = false;
         return false;
     }
 }
@@ -130,7 +136,7 @@ function playSyntheticFallback(type, mode) {
 async function resumeAudioContext() {
     if (audioCtx && audioCtx.state === "suspended") {
         await audioCtx.resume();
-        console.log("Audio context reanudado");
+        console.log("✅ Audio context reanudado");
         return true;
     }
     return false;
@@ -139,3 +145,16 @@ async function resumeAudioContext() {
 // Exponer funciones globalmente
 window.initAudio = initAudio;
 window.resumeAudioContext = resumeAudioContext;
+
+// 🔥 INICIALIZACIÓN AUTOMÁTICA: Cargar los audios al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("🔊 Iniciando carga de audios...");
+    // Iniciar la carga de audios inmediatamente
+    initAudio().then(success => {
+        if (success) {
+            console.log("✅ Audios cargados correctamente");
+        } else {
+            console.log("⚠️ Algunos audios no se cargaron, usando síntesis");
+        }
+    });
+});
