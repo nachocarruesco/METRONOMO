@@ -1,4 +1,4 @@
-//js/audio-engine.js - Versión con archivos WAV reales (con auto-inicio)
+//js/audio-engine.js - Sin inicialización automática
 
 const soundFiles = {
     "cajon_grave": "audio/cajon_grave.wav",
@@ -16,14 +16,17 @@ let audioInitialized = false;
 async function initAudio() {
     const statusDiv = document.getElementById("loadingStatus");
     
-    if (audioInitialized) return true;
+    // Si ya está inicializado, solo reanudar si está suspendido
+    if (audioInitialized) {
+        if (audioCtx && audioCtx.state === "suspended") {
+            await audioCtx.resume();
+        }
+        return true;
+    }
     
     try {
-        // Crear contexto de audio
+        // 🔥 Crear el contexto de audio SOLO cuando se llama desde un gesto de usuario
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Suspendemos inicialmente (necesario para iOS)
-        await audioCtx.suspend();
         
         statusDiv.textContent = "Cargando muestras de audio...";
         
@@ -53,25 +56,23 @@ async function initAudio() {
         if (loadedCount > 0) {
             statusDiv.textContent = `✅ ${loadedCount}/6 muestras cargadas!`;
             statusDiv.style.color = "#00ff88";
-            // Habilitar el botón de inicio
-            const startBtn = document.getElementById("start");
-            if (startBtn) startBtn.disabled = false;
             audioInitialized = true;
+            
+            // Reanudar el contexto (estamos en un gesto de usuario)
+            if (audioCtx && audioCtx.state === "suspended") {
+                await audioCtx.resume();
+            }
+            
             return true;
         } else {
             statusDiv.textContent = "⚠️ No se pudieron cargar los audios. Verifica la carpeta 'audio/'";
             statusDiv.style.color = "#ffaa00";
-            // Habilitar el botón igualmente (usará sonidos sintéticos)
-            const startBtn = document.getElementById("start");
-            if (startBtn) startBtn.disabled = false;
             return false;
         }
     } catch (error) {
         console.error("Error inicializando audio:", error);
         statusDiv.textContent = "❌ Error de audio. Usando sonidos sintéticos.";
         statusDiv.style.color = "#ffaa00";
-        const startBtn = document.getElementById("start");
-        if (startBtn) startBtn.disabled = false;
         return false;
     }
 }
@@ -79,7 +80,12 @@ async function initAudio() {
 function playSound(type, mode) {
     if (!audioCtx) return;
     
-    // Si el contexto está suspendido, no reproducir (se reanudará al hacer clic)
+    // Si el contexto está suspendido, intentar reanudar
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+        return;
+    }
+    
     if (audioCtx.state !== "running") return;
     
     const bufferKey = `${mode}_${type}`;
@@ -101,7 +107,7 @@ function playSound(type, mode) {
     }
 }
 
-// Sonido sintético de respaldo (en caso de que falte algún archivo)
+// Sonido sintético de respaldo
 function playSyntheticFallback(type, mode) {
     if (!audioCtx || audioCtx.state !== "running") return;
     
@@ -132,29 +138,11 @@ function playSyntheticFallback(type, mode) {
     osc.stop(now + 0.2);
 }
 
-// Función para reanudar audio (se llama al hacer clic en Start)
-async function resumeAudioContext() {
-    if (audioCtx && audioCtx.state === "suspended") {
-        await audioCtx.resume();
-        console.log("✅ Audio context reanudado");
-        return true;
-    }
-    return false;
-}
+// 🔥 IMPORTANTE: Eliminar cualquier inicialización automática
+// NO añadir: document.addEventListener('DOMContentLoaded', ...)
 
-// Exponer funciones globalmente
+// Exponer funciones y variables globalmente
 window.initAudio = initAudio;
-window.resumeAudioContext = resumeAudioContext;
-
-// 🔥 INICIALIZACIÓN AUTOMÁTICA: Cargar los audios al cargar la página
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("🔊 Iniciando carga de audios...");
-    // Iniciar la carga de audios inmediatamente
-    initAudio().then(success => {
-        if (success) {
-            console.log("✅ Audios cargados correctamente");
-        } else {
-            console.log("⚠️ Algunos audios no se cargaron, usando síntesis");
-        }
-    });
-});
+window.audioCtx = audioCtx;
+window.audioBuffers = audioBuffers;
+window.audioInitialized = audioInitialized;
