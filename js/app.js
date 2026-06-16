@@ -134,22 +134,39 @@ function draw() {
         const isActive = (i === currentStep);
         const mark = currentPreset.marks[i];
 
-        ctx.strokeStyle = ctx.fillStyle = isActive ? "#ffcc00" : "#666";
-        ctx.lineWidth = currentPreset.subdivisions > 12 ? 3 : 4;
+        // 👇 NUEVO: Color blanco para todos los marcadores
+        // El color de activación sigue siendo amarillo (#ffcc00)
+        ctx.strokeStyle = isActive ? "#ffcc00" : "#ffffff";
+        ctx.fillStyle = isActive ? "#ffcc00" : "#ffffff";
+        
+        // 👇 NUEVO: Líneas más gruesas
+        ctx.lineWidth = currentPreset.subdivisions > 12 ? 4 : 5;
 
         if (mark === "grave") {
+            // 👇 NUEVO: Círculos más grandes para graves
+            const graveRadius = currentPreset.subdivisions > 12 ? 14 : 18;
             ctx.beginPath();
-            ctx.arc(x, y, currentPreset.subdivisions > 12 ? 10 : 14, 0, Math.PI * 2);
+            ctx.arc(x, y, graveRadius, 0, Math.PI * 2);
             ctx.stroke();
+            // Rellenar ligeramente para más visibilidad
+            if (!isActive) {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+                ctx.fill();
+            }
         } else if (mark === "agudo") {
-            const size = currentPreset.subdivisions > 12 ? 6 : 10;
+            // 👇 NUEVO: X más grandes para agudos
+            const size = currentPreset.subdivisions > 12 ? 10 : 14;
             ctx.beginPath();
-            ctx.moveTo(x - size, y - size); ctx.lineTo(x + size, y + size);
-            ctx.moveTo(x + size, y - size); ctx.lineTo(x - size, y + size);
+            ctx.moveTo(x - size, y - size); 
+            ctx.lineTo(x + size, y + size);
+            ctx.moveTo(x + size, y - size); 
+            ctx.lineTo(x - size, y + size);
             ctx.stroke();
         } else {
+            // 👇 NUEVO: Puntos más grandes para posiciones sin marca
+            const dotRadius = currentPreset.subdivisions > 12 ? 6 : 9;
             ctx.beginPath();
-            ctx.arc(x, y, currentPreset.subdivisions > 12 ? 5 : 8, 0, Math.PI * 2);
+            ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
             ctx.fill();
         }
     }
@@ -159,11 +176,16 @@ function draw() {
     const ay = cy + Math.sin(needleAngle) * (radius - 20);
 
     ctx.beginPath();
-    ctx.moveTo(cx, cy); ctx.lineTo(ax, ay);
-    ctx.strokeStyle = "#00ff88"; ctx.lineWidth = 4; ctx.stroke();
+    ctx.moveTo(cx, cy); 
+    ctx.lineTo(ax, ay);
+    ctx.strokeStyle = "#00ff88"; 
+    ctx.lineWidth = 4; 
+    ctx.stroke();
 
-    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-    ctx.fillStyle = "#00ff88"; ctx.fill();
+    ctx.beginPath(); 
+    ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = "#00ff88"; 
+    ctx.fill();
 }
 
 function getIntervalMs() {
