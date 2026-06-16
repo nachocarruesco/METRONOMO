@@ -134,22 +134,27 @@ function draw() {
         const isActive = (i === currentStep);
         const mark = currentPreset.marks[i];
 
-        // Color blanco para todos los marcadores, amarillo para el activo
+        // 👇 NUEVO: Color blanco para todos los marcadores
+        // El color de activación sigue siendo amarillo (#ffcc00)
         ctx.strokeStyle = isActive ? "#ffcc00" : "#ffffff";
         ctx.fillStyle = isActive ? "#ffcc00" : "#ffffff";
+        
+        // 👇 NUEVO: Líneas más gruesas
         ctx.lineWidth = currentPreset.subdivisions > 12 ? 4 : 5;
 
         if (mark === "grave") {
+            // 👇 NUEVO: Círculos más grandes para graves
             const graveRadius = currentPreset.subdivisions > 12 ? 14 : 18;
             ctx.beginPath();
             ctx.arc(x, y, graveRadius, 0, Math.PI * 2);
             ctx.stroke();
-            // Relleno semi-transparente para mejor visibilidad
+            // Rellenar ligeramente para más visibilidad
             if (!isActive) {
                 ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
                 ctx.fill();
             }
         } else if (mark === "agudo") {
+            // 👇 NUEVO: X más grandes para agudos
             const size = currentPreset.subdivisions > 12 ? 10 : 14;
             ctx.beginPath();
             ctx.moveTo(x - size, y - size); 
@@ -158,6 +163,7 @@ function draw() {
             ctx.lineTo(x - size, y + size);
             ctx.stroke();
         } else {
+            // 👇 NUEVO: Puntos más grandes para posiciones sin marca
             const dotRadius = currentPreset.subdivisions > 12 ? 6 : 9;
             ctx.beginPath();
             ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
